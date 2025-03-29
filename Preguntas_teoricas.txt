@@ -1,0 +1,14 @@
+Pregunta 1 
+¿Por que si los pixeles de la imagen son numeros enteros ∈ [0, 255], utilizamos el tipo de dato
+unsigned char?
+
+
+Pregunta 2 
+¿Cuales serıan las diferencias entre usar unsigned int versus unsigned char? Responder
+cuantitativamente para una imagen RGB de dimensiones (N,N,3).
+
+
+Pregunta 3
+Usando este esquema de almacenamiento unidimensional: ¿Cual serıa el ındice del primer
+pixel del canal azul?
+¿Como podemos convertir una imagen RGB a escala de grises?

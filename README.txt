@@ -1,6 +1,6 @@
 
 Nombre: Isidora Ogas 
-Rol:
+Rol: 202473654-K
 
 Nombre: Matilde Vásquez
 Rol: 202473652-3

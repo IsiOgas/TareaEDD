@@ -36,6 +36,7 @@ void operacion_1(Imagen* img){ //reflección horizontal
             int pixel_derecho = (y * img->width + (img->width - x - 1)) * img->channels; //pos -1
 
             //para recorrer los canales
+            //se suma +c porque asi nos permite acceder a cada canal de un pixel y realizar el intercambio de valores
             for (int c = 0; c < img->channels; c++) { 
                 unsigned char tmp = img->data[pixel_izquierdo + c]; //Se guarda el valor del canal
                 img->data[pixel_izquierdo + c] = img->data[pixel_derecho + c]; //Se asigna el canal del pixel derecho al izq

@@ -1,5 +1,5 @@
 Pregunta 1 
-¿Por que si los pixeles de la imagen son numeros enteros ∈ [0, 255], utilizamos el tipo de dato
+¿Por qué si los pixeles de la imagen son números enteros ∈ [0, 255], utilizamos el tipo de dato
 unsigned char?
 
 

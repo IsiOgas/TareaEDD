@@ -59,6 +59,16 @@ void operacion_3(Imagen* img, float atenuacion){ //Creamos una función void que
     }
 }
 
+void operacion_4(Imagen* img, int limite){
+    for (int i = 0; i < img->width * img->height * img->channels; i++){//Este for es igual que el anterior op3.
+        if (img->data[i]> limite){//la posicion i pixel es mayor que el limite 
+            img->data[i] = 255;//transformamos ese pixel al blanco. en este caso 255 que es el maximo para un pixel
+        } else {//si i es menor al limite
+            img->data[i] = 0;//transformamos ese pixel a negro. en este caso 0 que es el min para un pixel.
+        }
+    }
+
+}
 
 int main() {
     
@@ -86,6 +96,17 @@ int main() {
         operacion_3(img, atenuacion);//Llamamos a la función que es la que modifica el grado de atenuacion.
     }
 
+    if (numero == 4) {
+        int limite;
+        cout << "Ingrese el límite para la operación (0 a 255): ";
+        cin >> limite;
+    
+        if (limite < 0 || limite > 255) {
+            cout << "Por favor, ingrese un límite válido entre 0 y 255.\n";
+        } else {
+            operacion_4(img, limite);
+        }
+    }
     // Almacenamos el resultado
     save(img, "out.png");
 }

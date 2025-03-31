@@ -84,8 +84,9 @@ void operacion_2(Imagen* img){
     //Es necesario usar delete[] porque estamos creando un nuevo arreglo.
 }
 
-void operacion_3(Imagen* img, float atenuacion){ //Creamos una función void que no devuelve ningun valor solo modifica, y agregamos nuestro puntero y la funcion float.
-    if (atenuacion < 0.0f || atenuacion > 1.0f){ //Revisamos si el valor dado esta dentro del rango [0,1] además usamos ese f que se refiere a un núm float.
+//Creamos una función void que no devuelve ningun valor solo modifica, y agregamos nuestro puntero y la funcion float.
+void operacion_3(Imagen* img, float atenuacion){ 
+    if (atenuacion < 0.0f || atenuacion > 1.0f){ 
         cout <<"EL valor ingresado debe estar entre 0.0 y 1.0.\n"; //Si el valor dado cumple la condición de arriba arroja este error.
         return;
     }
@@ -96,16 +97,21 @@ void operacion_3(Imagen* img, float atenuacion){ //Creamos una función void que
 }
 
 void operacion_4(Imagen* img, int limite){
-    for (int i = 0; i < img->width * img->height; i++){
-        int R = img->data[i * img->channels];
-        int G = img->data[i * img->channels + 1];
-        int B = img->data[i * img->channels +2];
+    //Bucle que recorre los pixeles de la img, al multiplicar la altura y el ancho obtenemos todos los pixeles, el i actua como el pixel que estamos "manejando".
+    for (int i = 0; i < img->width * img->height; i++){ 
+        int R = img->data[i * img->channels]; //Color Rojo
+        int G = img->data[i * img->channels + 1]; //Color Verde
+        int B = img->data[i * img->channels +2]; // Color Azul
 
-        if (R > limite || G > limite || B > limite) {
-            img->data[i * img->channels] = 255;
+        //Verificamos si algunos de los canales del color del pixel es mayor al limite.
+        if (R > limite || G > limite || B > limite) { 
+            // Convertimos todos los canales (R,G,B) al color blanco.
+            img->data[i * img->channels] = 255; 
             img->data[i * img->channels + 1] = 255;
             img->data[i * img->channels +2] = 255;
-        } else {
+
+            //Sino los convertimos negros.
+        } else { 
             img->data[i * img->channels] = 0;
             img->data[i * img->channels + 1] = 0;
             img->data[i * img->channels +2] = 0;

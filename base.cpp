@@ -96,14 +96,21 @@ void operacion_3(Imagen* img, float atenuacion){ //Creamos una función void que
 }
 
 void operacion_4(Imagen* img, int limite){
-    for (int i = 0; i < img->width * img->height * img->channels; i++){//Este for es igual que el anterior op3.
-        if (img->data[i]> limite){//la posicion i pixel es mayor que el limite 
-            img->data[i] = 255;//transformamos ese pixel al blanco. en este caso 255 que es el maximo para un pixel
-        } else {//si i es menor al limite
-            img->data[i] = 0;//transformamos ese pixel a negro. en este caso 0 que es el min para un pixel.
+    for (int i = 0; i < img->width * img->height; i++){
+        int R = img->data[i * img->channels];
+        int G = img->data[i * img->channels + 1];
+        int B = img->data[i * img->channels +2];
+
+        if (R > limite || G > limite || B > limite) {
+            img->data[i * img->channels] = 255;
+            img->data[i * img->channels + 1] = 255;
+            img->data[i * img->channels +2] = 255;
+        } else {
+            img->data[i * img->channels] = 0;
+            img->data[i * img->channels + 1] = 0;
+            img->data[i * img->channels +2] = 0;
         }
     }
-
 }
 
 int main() {
@@ -122,16 +129,17 @@ int main() {
     //img->data[101] = 0;
 
     if (numero == 1 ){
-
         operacion_1(img);
-    }else if (numero == 2)
-    {
+
+    }else if (numero == 2){
         operacion_2(img);
+
     }else if (numero == 3){ //si el numero es 3 entonces entramos a esta función. #Leer README C:.
         float atenuacion; //Declaramos la variable atenuacion que es de tipo float.
         cout<<"Ingrese un grado de atenuación entre 0.0 y 1.0: "; //El usario nos otorga un valor que hará que la imagen se atenue.
         cin >> atenuacion;//El valor asignado por el usario se guarda en la variable atenuacion.
         operacion_3(img, atenuacion);//Llamamos a la función que es la que modifica el grado de atenuacion.
+
     }else if (numero == 4) {
         int limite;
         cout << "Ingrese el límite para la operación (0 a 255): ";

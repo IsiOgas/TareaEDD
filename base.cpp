@@ -92,7 +92,7 @@ void operacion_3(Imagen* img, float atenuacion){
     }
 
     for(int i = 0; i < img->width * img->height * img->channels; i++){ //Si el valor dado esta dentro del rango,  recorremos  el arreglo. además cada pixel lo guardamos en la posición i.
-        img->data[i] = static_cast<unsigned char>(img->data[i] * atenuacion); //Acá multiplicamos cada pixel por el grado de atenuación. Esta operación como que "oscurese o hace mas transparente" y luego lo convertimos a usigned char para asegurar que esta en el rango valido para img.
+        img->data[i] = static_cast<unsigned char>(img->data[i] + (255 - img->data[i]) * atenuacion); //Acá multiplicamos cada pixel por el grado de atenuación. Esta operación como que "oscurese o hace mas transparente" y luego lo convertimos a usigned char para asegurar que esta en el rango valido para img.
     }
 }
 

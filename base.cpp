@@ -87,12 +87,28 @@ void operacion_2(Imagen* img){
 //Creamos una función void que no devuelve ningun valor solo modifica, y agregamos nuestro puntero y la funcion float.
 void operacion_3(Imagen* img, float atenuacion){ 
     if (atenuacion < 0.0f || atenuacion > 1.0f){ 
-        cout <<"EL valor ingresado debe estar entre 0.0 y 1.0.\n"; //Si el valor dado cumple la condición de arriba arroja este error.
+        //Si el valor dado cumple la condición de arriba arroja este error.
+        cout <<"EL valor ingresado debe estar entre 0.0 y 1.0.\n";
         return;
     }
 
-    for(int i = 0; i < img->width * img->height * img->channels; i++){ //Si el valor dado esta dentro del rango,  recorremos  el arreglo. además cada pixel lo guardamos en la posición i.
-        img->data[i] = static_cast<unsigned char>(img->data[i] + (255 - img->data[i]) * atenuacion); //Acá multiplicamos cada pixel por el grado de atenuación. Esta operación como que "oscurese o hace mas transparente" y luego lo convertimos a usigned char para asegurar que esta en el rango valido para img.
+    //Si el valor dado esta dentro del rango,  recorremos  el arreglo. además cada pixel lo guardamos en la posición i.
+    for(int i = 0; i < img->width * img->height * img->channels; i++){ 
+        //Calculamos cuanto falta para que el pixel sea blanco.
+        int resta_blanco = 255 - img->data[i]; 
+        //Aplicamos la atenuacion a lo anterior para que no se vea tan oscuro.
+        int ajuste = resta_blanco * atenuacion; 
+        //Le sumamos este ajuste al pixel orginal para obtener el nuevo pixel con su diferente color.
+        int NuevoPixel = img->data[i] + ajuste; 
+
+        //Si el nuevo pixel es mayor a 255 lo ajustamos para que se quede dentro del rango permitido para una imagen.
+        if (NuevoPixel > 255) NuevoPixel = 255; 
+        //Si el neuvo pixel es menor a 0 le ajustamos para que se quede dentro del rango permitido para una imagen.
+        if (NuevoPixel < 0) NuevoPixel = 0; 
+        //**Estos ajustes los hacemos para que no nos ocurra una imagen "corrupta" como que le salga unos cuadritos extraños*/
+
+        //Convertimos el nuevo pixel a usigned char(tipo de datoq ue solo acepta valores engtre 0 y 255) y guardamos el resultado en el arreglo
+        img->data[i] = static_cast<unsigned char>(NuevoPixel); 
     }
 }
 

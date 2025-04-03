@@ -5,6 +5,8 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include <iostream>
+// Importamos <fstream> para poder usar ofstream en la Operacion de ASCII ART
+#include <fstream>
 
 using namespace std;
 
@@ -133,6 +135,36 @@ void operacion_4(Imagen* img, int limite){
             img->data[i * img->channels +2] = 0;
         }
     }
+    save(img, "Op4.png");
+}
+
+void operacion_5(Imagen* img){
+    const string caracteres_ASCII = "@%#*+=-:."; //Arreglo N ordenados por luminosidad aparente. Del más "oscuro" al más "blanco" porque
+                                                  // asi los valores más altos corresponden al blanco y los menores al oscuro. 
+
+    ofstream Salida_Archivo("Pikachu_ascii.txt");
+
+    for (int y = 0; y < img->height; y++) { //Recorremos la imagen completa. 
+        for (int x = 0; x < img->width; x++) {
+            int pos_pixel = (y * img->width + x) * img->channels; //posición pixel, pos 0.
+
+            int R = img->data[pos_pixel]; //Canal Rojo.
+            int G = img->data[pos_pixel + 1]; //Canal Verde.
+            int B = img->data[pos_pixel + 2]; //Canal Azul.
+            int escala_gris = 0.3 * R + 0.59 * G + 0.11 * B; //Transformamos a escala de grises.
+
+            // Como estamos usando la formula de escala de grises es mejor poner un rango para que no se pase ningun pixel blanco, ya que
+            // a veces por detalle de la foto un pixel no es completamente blanco. 
+            if (escala_gris > 230) {  //Para que el fondo blanco sea "transparente".
+                Salida_Archivo << ' ';
+            } else {
+                char Char_a_ASCII = caracteres_ASCII[escala_gris * (caracteres_ASCII.size() - 1) / 255]; // Transformación al caracter ASCII.
+                Salida_Archivo << Char_a_ASCII; // Se escribe caracter del arreglo ASCII en archivo.
+            }
+        }
+        Salida_Archivo << endl; // Nueva línea para la siguiente fila
+    }
+    Salida_Archivo.close();
 }
 
 int main() {
@@ -172,6 +204,8 @@ int main() {
         } else {
             operacion_4(img, limite);
         }
+    }else{
+        operacion_5(img);
     }
     // Almacenamos el resultado
     save(img, "out.png");

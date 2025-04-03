@@ -50,6 +50,6 @@ del rojo se mantiene.
 Based on the aforementioned observations, we should take a weighted average of the components. The contribution 
 of blue to the final value should decrease, and the contribution of green should increase. After some experiments 
 and more in-depth analysis, researchers have concluded in the equation below:
-grayscale = 0.3 * R + 0.59 * G + 0.11 * B".
+grayscale = 0.3 * R + 0.59 * G + 0.11 * B". (Panagiotis Antoniadis, 2024).
 
 https://www.baeldung.com/cs/convert-rgb-to-grayscale

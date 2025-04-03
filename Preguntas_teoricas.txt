@@ -2,13 +2,54 @@ Pregunta 1
 ¿Por qué si los pixeles de la imagen son números enteros ∈ [0, 255], utilizamos el tipo de dato
 unsigned char?
 
+R- Unsigned char sirve para almacenar datos del [0,255], en este caso como los pixeles de la imagen
+están en el mismo rango nos aseguramos de que todos son considerados. Si se usara char o signed char 
+sería en un rango de [-128,127],  por lo tanto estaríamos considerando solo la mitad de los pixeles.
+
+"Both can store 256 different values, but signed integers use half of their range for negative numbers, 
+whereas unsigned integers can store positive numbers that are twice as large." (Alex, 2024).
+https://www.learncpp.com/cpp-tutorial/unsigned-integers-and-why-to-avoid-them/
+
 
 Pregunta 2 
-¿Cuales serıan las diferencias entre usar unsigned int versus unsigned char? Responder
+¿Cuales serían las diferencias entre usar unsigned int versus unsigned char? Responder
 cuantitativamente para una imagen RGB de dimensiones (N,N,3).
+
+R- La diferencia se puede analizar respecto al uso de la memoria. un tipo char llega a usar 1 byte (8bits) 
+mientras que un tipo int usa 4 bytes (32bits). Por lo tanto, el tipo int ocupa 4 veces más espacio 
+que el tipo char. Por ejemplo, si N=50, con unsigned char tendriamos (50x50x3) x 1 byte = 7500 bytes, mientras 
+que con unsigned int tendriamos (50x50x3) x 4 bytes= 30,000 bytes. Por lo que, para imágenes rgb es más 
+conveniente usar unsigned char gracias a que ocupa menos espacio. 
+
+https://learn.microsoft.com/es-es/cpp/c-language/storage-of-basic-types?view=msvc-170
 
 
 Pregunta 3
-Usando este esquema de almacenamiento unidimensional: ¿Cual serıa el ındice del primer
+Usando este esquema de almacenamiento unidimensional: ¿Cuál sería el índice del primer
 pixel del canal azul?
+
+R- Como es un arreglo unidimensional de la forma [r,g,b, r,g,b…], el índice del primer pixel azul sería el 2. R=0,G=1,B=2.
+
+"Cada una de las localidades actúa entonces como una variable independiente de las demás, por esa razón puede 
+ser leída y/o modificada sin afectar a las demás. Lo que tienen en común las variables en los contenedores, es 
+que son del mismo tipo y que pertenecen al mismo arreglo." (Dr. Héctor Selley)
+https://lab.anahuac.mx/~hselley/ayp/arreglos.html
+
+Pregunta 4
 ¿Como podemos convertir una imagen RGB a escala de grises?
+
+A pesar de que hay varias formas de convertir una imagen RGB en escala de grises,  tambien existen 3 metodos para 
+poder hacerlo, metodo del promedio,  metodo de claridad y  metodo de luminosidad. El ultimo siendo el mejor, 
+ya que se usan números especificos en la siguiente formula:
+grayscale = 0.3 * R + 0.59 * G + 0.11 * B
+Esta formula se usa porque la contribucion del azul decrece y la del verde aumenta, mientras que la
+del rojo se mantiene.
+
+
+"The best method is the luminosity method that successfully solves the problems of previous methods.
+Based on the aforementioned observations, we should take a weighted average of the components. The contribution 
+of blue to the final value should decrease, and the contribution of green should increase. After some experiments 
+and more in-depth analysis, researchers have concluded in the equation below:
+grayscale = 0.3 * R + 0.59 * G + 0.11 * B".
+
+https://www.baeldung.com/cs/convert-rgb-to-grayscale

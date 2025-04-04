@@ -21,9 +21,13 @@ struct Imagen{
 Imagen* load(const char* filename) {
     Imagen* img = new Imagen(); // Se crea una nueva estructura Imagen con el puntero img
     img->data = stbi_load(filename, &img->width, &img->height, &img->channels, 3); // stbi load carga la info de la imagen en la dirección correspondiente de cada uno de ancho, alto y canal.
-    img->channels=3;
+    
+    //Si la imagen tiene más de 3 canales, forzamos que tenga 3 (RGB)
+    img->channels = 3; //Esto nos asegura que la imagen tendrá solo 3 canales, incluso si ya tiene 4 canales.
+    
     return img; // Devuelve el puntero.
 }
+
 
 // Guardar imagen en memoria local
 void save(Imagen* img, const char* filename) {
@@ -53,6 +57,8 @@ void operacion_1(Imagen* img){
     // No es necesario delete[] porque no se crea un nuevo arreglo, solo se modifica el arreglo existente.
     save(img, "Op1.png");
 }
+
+
 // Función giro 90°
 void operacion_2(Imagen* img){ 
     // Al girar una imagen el ancho se vuelve la altura y viceversa.
@@ -92,15 +98,17 @@ void operacion_2(Imagen* img){
     
 }
 
-//Creamos una función void que no devuelve ningun valor solo modifica, y agregamos nuestro puntero y la funcion float.
+
+//Operación 3: Grado de atenuación
+//Definimos una función que toma como entrada una imagen y un valor de atenuación.
 void operacion_3(Imagen* img, float atenuacion){ 
-    if (atenuacion < 0.0f || atenuacion > 1.0f){ 
+    if (atenuacion < 0.0f || atenuacion > 1.0f){ //El f al lado de los núm es porque son flotantes.
         //Si el valor dado cumple la condición de arriba arroja este error.
         cout <<"EL valor ingresado debe estar entre 0.0 y 1.0.\n";
         return;
     }
 
-    //Si el valor dado esta dentro del rango,  recorremos  el arreglo. además cada pixel lo guardamos en la posición i.
+    //Si el valor dado esta dentro del rango,  recorremos  el arreglo. Además cada pixel lo guardamos en la posición i.
     for(int i = 0; i < img->width * img->height * img->channels; i++){ 
         //Calculamos cuanto falta para que el pixel sea blanco.
         int resta_blanco = 255 - img->data[i]; 
@@ -115,13 +123,20 @@ void operacion_3(Imagen* img, float atenuacion){
         if (NuevoPixel < 0) NuevoPixel = 0; 
         //**Estos ajustes los hacemos para que no nos ocurra una imagen "corrupta" como que le salga unos cuadritos extraños*/
 
-        //Convertimos el nuevo pixel a usigned char(tipo de datoq ue solo acepta valores engtre 0 y 255) y guardamos el resultado en el arreglo
+        //Convertimos el nuevo pixel a usigned char(tipo de dato que solo acepta valores entre 0 y 255) y guardamos el resultado en el arreglo.
         img->data[i] = static_cast<unsigned char>(NuevoPixel); 
     }
     save(img, "Op3.png");
 }
 
+//Operación 4: Límite para el cual el pixel se vuelve negro o blanco.
+////Definimos una función que toma como entrada una imagen y un límite.
 void operacion_4(Imagen* img, int limite){
+    if (limite < 0 || limite > 255){ 
+        //Si el valor dado cumple la condición de arriba arroja este error.
+        cout <<"EL valor ingresado debe estar entre 0 y 255.\n";
+        return;
+    }
     //Bucle que recorre los pixeles de la img, al multiplicar la altura y el ancho obtenemos todos los pixeles, el i actua como el pixel que estamos "manejando".
     for (int i = 0; i < img->width * img->height; i++){ 
         int R = img->data[i * img->channels]; //Color Rojo
@@ -144,6 +159,8 @@ void operacion_4(Imagen* img, int limite){
     }
     save(img, "Op4.png");
 }
+
+
 void save_ascii(char* arregloASCII, int width, int height){
     ofstream Salida_Archivo("Pikachu_ascii.txt");
 
@@ -187,48 +204,44 @@ void to_ascii(Imagen* img){
 }
 
 int main() {
-    
-    int numero;
-    cout << "Ingresar número de operación: "<< endl;
-    cin >> numero;
-    
     //Cargamos la imagen
     Imagen* img = load("Pikachu.png");
-
+    //Operación 1: Refleción Horizontal
     operacion_1(img);
-
-    operacion_2(img);
-    //Eliminamos los datos sobreescritos por la rotacion de 90°
+    //Liberamos la memoria luego de la operación 1
     delete[] img->data;
     delete img;
-
-    // Volvemos a cargar la imagen original desde disco
-    // No volvemos a escribir Imagen* porque ya fue declarado antes.
+    
+    //Volvemos a cargar la imagen, está vez sin puntero porque ya fue declarado antes
     img = load("Pikachu.png");
-    
-    if (numero == 3){ //si el numero es 3 entonces entramos a esta función. #Leer README C:.
-        float atenuacion; //Declaramos la variable atenuacion que es de tipo float.
-        cout<<"Ingrese un grado de atenuación entre 0.0 y 1.0: "; //El usario nos otorga un valor que hará que la imagen se atenue.
-        cin >> atenuacion;//El valor asignado por el usario se guarda en la variable atenuacion.
-        operacion_3(img, atenuacion);//Llamamos a la función que es la que modifica el grado de atenuacion.
-
-    }else if (numero == 4) {
-        int limite;
-        cout << "Ingrese el límite para la operación (0 a 255): ";
-        cin >> limite;
-    
-        if (limite < 0 || limite > 255) {
-            cout << "Por favor, ingrese un límite válido entre 0 y 255.\n";
-        } else {
-            operacion_4(img, limite);
-        }
-    }
-    to_ascii(img);
-    
-    // Almacenamos el resultado
-    //save(img, "out.png");
-
-    // Liberamos la memoria ocupada por la imagen antes de finalizar.
+    //Operación 1: Rotación 90°
+    operacion_2(img);
+    //Liberamos la memoria luego de la operación 2
     delete[] img->data;
     delete img;
+    
+    //Volvemos a cargar la imagen
+    img = load("Pikachu.png");
+    //Operación 3: Grado de atenuación **Si se le llega a cambiar el núm por uno fuera del rango [0.0,1.0] arroja un mensaje de "error" **
+    operacion_3(img, 0.5); 
+    //Liberamos la memoria luego de la operación 3
+    delete[] img->data;
+    delete img;
+
+    //Volvemos a cargar la imagen
+    img = load("Pikachu.png");
+    //Operación 4: Límite para el cual el pixel se vuelve negro o blanco **Si se le llega a cambiar el núm por uno fuera del rango [0,255] arroja un mensaje de "error" **
+    operacion_4(img, 170);
+    //Liberamos la memoria luego de la operación 4
+    delete[] img->data;
+    delete img;
+
+    //Volvemos a cargar la imagen por última vez :D
+    img = load("Pikachu.png");
+    //Operación 5: Conversión a ASCII
+    to_ascii(img);
+    //Liberamos la memoria luego de la operación 5
+    delete[] img->data;
+    delete img;
+
 }

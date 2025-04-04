@@ -20,7 +20,8 @@ struct Imagen{
 // img->data, es acceder a los atributos. Puntero img, accede a los atributos data como el ancho.
 Imagen* load(const char* filename) {
     Imagen* img = new Imagen(); // Se crea una nueva estructura Imagen con el puntero img
-    img->data = stbi_load(filename, &img->width, &img->height, &img->channels, 0); // stbi load carga la info de la imagen en la dirección correspondiente de cada uno de ancho, alto y canal.
+    img->data = stbi_load(filename, &img->width, &img->height, &img->channels, 3); // stbi load carga la info de la imagen en la dirección correspondiente de cada uno de ancho, alto y canal.
+    img->channels=3;
     return img; // Devuelve el puntero.
 }
 
@@ -50,6 +51,7 @@ void operacion_1(Imagen* img){
         }
     }
     // No es necesario delete[] porque no se crea un nuevo arreglo, solo se modifica el arreglo existente.
+    save(img, "Op1.png");
 }
 // Función giro 90°
 void operacion_2(Imagen* img){ 
@@ -79,11 +81,15 @@ void operacion_2(Imagen* img){
     }
     // Una vez ya creada la imagen debemos reemplazar los datos de la imagen original por los nuevos datos rotados.
     // Liberamos la memoria original para poder reemplazar con los datos de la imagen rotada.
+    
     delete[] img->data;
+    
     img->data = nuevo_data;
     img->width = nuevo_ancho;
     img->height = nueva_altura;
     //Es necesario usar delete[] porque estamos creando un nuevo arreglo.
+    save(img, "Op2.png");
+    
 }
 
 //Creamos una función void que no devuelve ningun valor solo modifica, y agregamos nuestro puntero y la funcion float.
@@ -112,6 +118,7 @@ void operacion_3(Imagen* img, float atenuacion){
         //Convertimos el nuevo pixel a usigned char(tipo de datoq ue solo acepta valores engtre 0 y 255) y guardamos el resultado en el arreglo
         img->data[i] = static_cast<unsigned char>(NuevoPixel); 
     }
+    save(img, "Op3.png");
 }
 
 void operacion_4(Imagen* img, int limite){
@@ -137,12 +144,24 @@ void operacion_4(Imagen* img, int limite){
     }
     save(img, "Op4.png");
 }
+void save_ascii(char* arregloASCII, int width, int height){
+    ofstream Salida_Archivo("Pikachu_ascii.txt");
 
-void operacion_5(Imagen* img){
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            Salida_Archivo << arregloASCII[y * width + x];  // Escribir el carácter ASCII en el archivo
+        }
+        Salida_Archivo << endl;  // Nueva línea después de cada fila
+    }
+    Salida_Archivo.close();
+}
+
+void to_ascii(Imagen* img){
     const string caracteres_ASCII = "@%#*+=-:."; //Arreglo N ordenados por luminosidad aparente. Del más "oscuro" al más "blanco" porque
                                                   // asi los valores más altos corresponden al blanco y los menores al oscuro. 
 
-    ofstream Salida_Archivo("Pikachu_ascii.txt");
+    
+    char* arregloASCII = new char[img->width * img->height];
 
     for (int y = 0; y < img->height; y++) { //Recorremos la imagen completa. 
         for (int x = 0; x < img->width; x++) {
@@ -153,18 +172,18 @@ void operacion_5(Imagen* img){
             int B = img->data[pos_pixel + 2]; //Canal Azul.
             int escala_gris = 0.3 * R + 0.59 * G + 0.11 * B; //Transformamos a escala de grises.
 
-            // Como estamos usando la formula de escala de grises es mejor poner un rango para que no se pase ningun pixel blanco, ya que
-            // a veces por detalle de la foto un pixel no es completamente blanco. 
-            if (escala_gris > 230) {  //Para que el fondo blanco sea "transparente".
-                Salida_Archivo << ' ';
+            //Algunos pixeles no son 100% blancos entonces para asegurarnos de que se consideren consideramos un rango.
+            if (escala_gris > 230) {
+                arregloASCII[y * img->width + x] = ' ';
             } else {
                 char Char_a_ASCII = caracteres_ASCII[escala_gris * (caracteres_ASCII.size() - 1) / 255]; // Transformación al caracter ASCII.
-                Salida_Archivo << Char_a_ASCII; // Se escribe caracter del arreglo ASCII en archivo.
+                arregloASCII[y * img->width + x] = Char_a_ASCII;
             }
+            
         }
-        Salida_Archivo << endl; // Nueva línea para la siguiente fila
     }
-    Salida_Archivo.close();
+    save_ascii(arregloASCII, img->width, img->height);
+    delete[] arregloASCII;
 }
 
 int main() {
@@ -173,22 +192,21 @@ int main() {
     cout << "Ingresar número de operación: "<< endl;
     cin >> numero;
     
-        
-    
-
     //Cargamos la imagen
     Imagen* img = load("Pikachu.png");
 
-    //Modificamos un par de pixeles en el borde superior de la imagen como ejemplo
-    //img->data[101] = 0;
+    operacion_1(img);
 
-    if (numero == 1 ){
-        operacion_1(img);
+    operacion_2(img);
+    //Eliminamos los datos sobreescritos por la rotacion de 90°
+    delete[] img->data;
+    delete img;
 
-    }else if (numero == 2){
-        operacion_2(img);
-
-    }else if (numero == 3){ //si el numero es 3 entonces entramos a esta función. #Leer README C:.
+    // Volvemos a cargar la imagen original desde disco
+    // No volvemos a escribir Imagen* porque ya fue declarado antes.
+    img = load("Pikachu.png");
+    
+    if (numero == 3){ //si el numero es 3 entonces entramos a esta función. #Leer README C:.
         float atenuacion; //Declaramos la variable atenuacion que es de tipo float.
         cout<<"Ingrese un grado de atenuación entre 0.0 y 1.0: "; //El usario nos otorga un valor que hará que la imagen se atenue.
         cin >> atenuacion;//El valor asignado por el usario se guarda en la variable atenuacion.
@@ -204,12 +222,13 @@ int main() {
         } else {
             operacion_4(img, limite);
         }
-    }else{
-        operacion_5(img);
     }
+    to_ascii(img);
+    
     // Almacenamos el resultado
-    save(img, "out.png");
+    //save(img, "out.png");
 
     // Liberamos la memoria ocupada por la imagen antes de finalizar.
+    delete[] img->data;
     delete img;
 }

@@ -66,7 +66,7 @@ void operacion_2(Imagen* img){
     int nueva_altura = img->width;// La nueva altura es igual al ancho.
     // Se crea un nuevo arreglo para asi poder almacenar la imagen rotada.
     unsigned char* nuevo_data = new unsigned char[nuevo_ancho * nueva_altura * img->channels];
-    // Recorremos todas las filas en este caso porque vamos a estar cambiando las posiciones de los pixeles (x,y) --> (-y,x). 
+    // Recorremos todas las imagen en este caso porque vamos a estar cambiando las posiciones de los pixeles (x,y) --> (-y,x). 
     for(int y=0; y < img->height; y++){
         for(int x=0; x < img->width; x++){
             // Posición del pixel original.
@@ -160,28 +160,36 @@ void operacion_4(Imagen* img, int limite){
     save(img, "Op4.png");
 }
 
+void delete_ascii(char** arregloASCII, int height) {
+    for (int y = 0; y < height; y++) {
+        delete[] arregloASCII[y];  // Liberamos cada fila
+    }
+    delete[] arregloASCII;  // Liberamos el arreglo char**
+}
 
-void save_ascii(char* arregloASCII, int width, int height){
+void save_ascii(char** arregloASCII, int width, int height){
     ofstream Salida_Archivo("Pikachu_ascii.txt");
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            Salida_Archivo << arregloASCII[y * width + x];  // Escribir el carácter ASCII en el archivo
+            Salida_Archivo << arregloASCII[y][x];  // Escribir el carácter ASCII en el archivo
         }
         Salida_Archivo << endl;  // Nueva línea después de cada fila
     }
     Salida_Archivo.close();
 }
 
-void to_ascii(Imagen* img){
-    const string caracteres_ASCII = "@%#*+=-:."; //Arreglo N ordenados por luminosidad aparente. Del más "oscuro" al más "blanco" porque
-                                                  // asi los valores más altos corresponden al blanco y los menores al oscuro. 
+char** to_ascii(Imagen* img, const string& caracteres_ASCII){ 
+    //como es un arrgelo bidimensional de caracteres usamos char y **. 
+    //El primer puntero -> filas.
+    //El segundo puntero -> columnas. 
 
-    
-    char* arregloASCII = new char[img->width * img->height];
+    char** arregloASCII = new char* [img->height]; //Arrgelo de img->height filas
 
-    for (int y = 0; y < img->height; y++) { //Recorremos la imagen completa. 
-        for (int x = 0; x < img->width; x++) {
+    for (int y = 0; y < img->height; y++) { //Recorremos las filas y creamos espacio para las columnas correspondiente. 
+        arregloASCII[y] = new char[img->width]; //Entonces arregloASCII[y]= fila correspondiente   
+        for (int x = 0; x < img->width; x++) { //Recorremos la imagen completa.
+                                              //Ahora con for accedemos a arrgeloASCII[y][x]= (fila,columna) correspondiente.
             int pos_pixel = (y * img->width + x) * img->channels; //posición pixel, pos 0.
 
             int R = img->data[pos_pixel]; //Canal Rojo.
@@ -191,16 +199,16 @@ void to_ascii(Imagen* img){
 
             //Algunos pixeles no son 100% blancos entonces para asegurarnos de que se consideren consideramos un rango.
             if (escala_gris > 230) {
-                arregloASCII[y * img->width + x] = ' ';
+                arregloASCII[y][x]  = ' ';
             } else {
-                char Char_a_ASCII = caracteres_ASCII[escala_gris * (caracteres_ASCII.size() - 1) / 255]; // Transformación al caracter ASCII.
-                arregloASCII[y * img->width + x] = Char_a_ASCII;
+                arregloASCII[y][x]  = caracteres_ASCII[escala_gris * (caracteres_ASCII.size() - 1) / 255]; // Transformación al caracter ASCII.
+                                                    // escala* indice del arreglo Carac_ASCII  / canales = pos en el arreglo Carac_ASCII
             }
             
         }
     }
-    save_ascii(arregloASCII, img->width, img->height);
-    delete[] arregloASCII;
+    return arregloASCII;
+    
 }
 
 int main() {
@@ -235,13 +243,20 @@ int main() {
     //Liberamos la memoria luego de la operación 4
     delete[] img->data;
     delete img;
+    
 
     //Volvemos a cargar la imagen por última vez :D
     img = load("Pikachu.png");
     //Operación 5: Conversión a ASCII
-    to_ascii(img);
+    const string caracteres_ASCII = "@%#*+=-:."; //Arreglo N ordenados por luminosidad aparente. Del más "oscuro" al más "blanco" porque
+                                                  // asi los valores más altos corresponden al blanco y los menores al oscuro.
+    char** resultadoASCII =to_ascii(img, caracteres_ASCII); //Guardamos la matriz bidimensional en resultado ASCII.
+    save_ascii(resultadoASCII, img->width, img->height);
+    
     //Liberamos la memoria luego de la operación 5
+    delete_ascii(resultadoASCII, img->height); //como es una arreglo bidimensional se tiene que recorrer cada fila y columna creada. 
     delete[] img->data;
     delete img;
 
+    return 0;
 }

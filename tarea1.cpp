@@ -34,7 +34,9 @@ void save(Imagen* img, const char* filename) {
     stbi_write_png(filename, img->width, img->height, img->channels, img->data, img->width * img->channels);
     cout << "Imagen guardada:  " << filename << "\n";
 }
-// Funcíon reflección horizontal
+
+//** Operación 1: Reflección horizontal */
+//Definimos un afunción que toma como entrada una imagen.
 void operacion_1(Imagen* img){ 
     for (int y = 0; y < img->height; y++) { // Para recorrer fila
         for (int x = 0; x < img->width/2; x++){ // Se recorre la mitad de las columnas porque asi el intercambio 
@@ -55,11 +57,11 @@ void operacion_1(Imagen* img){
         }
     }
     // No es necesario delete[] porque no se crea un nuevo arreglo, solo se modifica el arreglo existente.
-    save(img, "Op1.png");
+    save(img, "Op1.png"); //Guardamos la imagen en un archivo png.
 }
 
-
-// Función giro 90°
+//** Operación 2: Giro 90 */
+// Definimos una función que toma como entrada una imagen.
 void operacion_2(Imagen* img){ 
     // Al girar una imagen el ancho se vuelve la altura y viceversa.
     int nuevo_ancho = img->height; // El nuevo ancho es igual a la altura.
@@ -94,12 +96,12 @@ void operacion_2(Imagen* img){
     img->width = nuevo_ancho;
     img->height = nueva_altura;
     //Es necesario usar delete[] porque estamos creando un nuevo arreglo.
-    save(img, "Op2.png");
+    save(img, "Op2.png"); //Guardamos la imagen en un archivo png.
     
 }
 
 
-//Operación 3: Grado de atenuación
+//** Operación 3: Grado de atenuación */
 //Definimos una función que toma como entrada una imagen y un valor de atenuación.
 void operacion_3(Imagen* img, float atenuacion){ 
     if (atenuacion < 0.0f || atenuacion > 1.0f){ //El f al lado de los núm es porque son flotantes.
@@ -126,11 +128,11 @@ void operacion_3(Imagen* img, float atenuacion){
         //Convertimos el nuevo pixel a usigned char(tipo de dato que solo acepta valores entre 0 y 255) y guardamos el resultado en el arreglo.
         img->data[i] = static_cast<unsigned char>(NuevoPixel); 
     }
-    save(img, "Op3.png");
+    save(img, "Op3.png"); //Guardamos la imagen en un archivo png.
 }
 
-//Operación 4: Límite para el cual el pixel se vuelve negro o blanco.
-////Definimos una función que toma como entrada una imagen y un límite.
+//** Operación 4: Límite para el cual el pixel se vuelve negro o blanco */
+//Definimos una función que toma como entrada una imagen y un límite.
 void operacion_4(Imagen* img, int limite){
     if (limite < 0 || limite > 255){ 
         //Si el valor dado cumple la condición de arriba arroja este error.
@@ -157,9 +159,10 @@ void operacion_4(Imagen* img, int limite){
             img->data[i * img->channels +2] = 0;
         }
     }
-    save(img, "Op4.png");
+    save(img, "Op4.png"); //Guardamos la imagen en un archivo png.
 }
 
+//** Operación 5: Conversión a ASCII */
 void delete_ascii(char** arregloASCII, int height) {
     for (int y = 0; y < height; y++) {
         delete[] arregloASCII[y];  // Liberamos cada fila
@@ -239,12 +242,11 @@ int main() {
     //Volvemos a cargar la imagen
     img = load("Pikachu.png");
     //Operación 4: Límite para el cual el pixel se vuelve negro o blanco **Si se le llega a cambiar el núm por uno fuera del rango [0,255] arroja un mensaje de "error" **
-    operacion_4(img, 170);
+    operacion_4(img, 160);
     //Liberamos la memoria luego de la operación 4
     delete[] img->data;
     delete img;
     
-
     //Volvemos a cargar la imagen por última vez :D
     img = load("Pikachu.png");
     //Operación 5: Conversión a ASCII

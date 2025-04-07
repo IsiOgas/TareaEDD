@@ -181,8 +181,8 @@ void save_ascii(char** arregloASCII, int width, int height){
 
 char** to_ascii(Imagen* img, const string& caracteres_ASCII){ 
     //como es un arrgelo bidimensional de caracteres usamos char y **. 
-    //El primer puntero -> filas.
-    //El segundo puntero -> columnas. 
+    //El primer puntero -> filas. Ej: Resultado[0], fila 0.
+    //El segundo puntero -> Arreglo de fila. Ej: Resultado [0][0] fila 0, pos 0 de esta.
 
     char** arregloASCII = new char* [img->height]; //Arrgelo de img->height filas
 

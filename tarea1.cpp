@@ -35,8 +35,8 @@ void save(Imagen* img, const char* filename) {
     cout << "Imagen guardada:  " << filename << "\n";
 }
 
-//** Operación 1: Reflección horizontal */
-//Definimos un afunción que toma como entrada una imagen.
+//** Operación 1: Reflección horizontal *//
+//Definimos una función que toma como entrada una imagen.
 void operacion_1(Imagen* img){ 
     for (int y = 0; y < img->height; y++) { // Para recorrer fila
         for (int x = 0; x < img->width/2; x++){ // Se recorre la mitad de las columnas porque asi el intercambio 
@@ -60,7 +60,7 @@ void operacion_1(Imagen* img){
     save(img, "Op1.png"); //Guardamos la imagen en un archivo png.
 }
 
-//** Operación 2: Giro 90 */
+//** Operación 2: Giro 90 *//
 // Definimos una función que toma como entrada una imagen.
 void operacion_2(Imagen* img){ 
     // Al girar una imagen el ancho se vuelve la altura y viceversa.
@@ -101,7 +101,7 @@ void operacion_2(Imagen* img){
 }
 
 
-//** Operación 3: Grado de atenuación */
+//** Operación 3: Grado de atenuación *//
 //Definimos una función que toma como entrada una imagen y un valor de atenuación.
 void operacion_3(Imagen* img, float atenuacion){ 
     if (atenuacion < 0.0f || atenuacion > 1.0f){ //El f al lado de los núm es porque son flotantes.
@@ -131,7 +131,7 @@ void operacion_3(Imagen* img, float atenuacion){
     save(img, "Op3.png"); //Guardamos la imagen en un archivo png.
 }
 
-//** Operación 4: Límite para el cual el pixel se vuelve negro o blanco */
+//** Operación 4: Límite para el cual el pixel se vuelve negro o blanco *//
 //Definimos una función que toma como entrada una imagen y un límite.
 void operacion_4(Imagen* img, int limite){
     if (limite < 0 || limite > 255){ 
